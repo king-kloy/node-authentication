@@ -1,4 +1,17 @@
+const jwt = require("jsonwebtoken");
+require("dotenv/config");
+
 const User = require("../models/User.model");
+
+// generate sign token
+const signToken = user => {
+  return jwt.sign({
+    iss: 'king-kloy',
+    sub: user._id,
+    iat: new Date().getTime(), // current time
+    exp: new Date().setDate(new Date().getDate() + 1) // expires in 1 day
+  }, process.env.JWT_SECRET);
+}
 
 module.exports = {
   signUp: async (req, res, next) => {
@@ -8,7 +21,7 @@ module.exports = {
     } = req.value.body;
 
     // check with email if user already exist
-    const foundUser = await User.findOne();
+    const foundUser = await User.findOne({ email });
     if (foundUser) {
       return res.status(403).json({
         message: "email already in use"
@@ -24,9 +37,12 @@ module.exports = {
     // save the user to the database
     await newUser.save();
 
+    // create token
+    const token = signToken(newUser);
+
     // response with token
-    return res.json({
-      message: "new user created successfully"
+    return res.status(200).json({
+      token
     });
   },
   signIn: async (req, res, next) => {

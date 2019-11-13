@@ -24,7 +24,7 @@ module.exports = {
     const foundUser = await User.findOne({ email });
     if (foundUser) {
       return res.status(403).json({
-        message: "email already in use"
+        error: "email already in use"
       });
     }
 

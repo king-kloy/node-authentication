@@ -46,9 +46,17 @@ module.exports = {
     });
   },
   signIn: async (req, res, next) => {
+    // generate token by the req.user
+    const token = signToken(req.user);
+    res.status(200).json({
+      token
+    });
     console.log("UserController.signIn() is called");
   },
   secret: async (req, res, next) => {
     console.log("UserController.secret() is called");
+    res.json({
+      secret: "resource"
+    });
   },
 }

@@ -7,13 +7,11 @@ mongoose.Promise = global.Promise;
 // connect to mongo URI
 if (process.env.NODE_ENV === "test") {
   mongoose.connect("mongodb://localhost/APIAuthenticationTEST", {
-    useNewUrlParser: true,
-    useMongoClient: true
+    useNewUrlParser: true
   });
 } else {
   mongoose.connect("mongodb://localhost/APIAuthentication", {
-    useNewUrlParser: true,
-    useMongoClient: true
+    useNewUrlParser: true
   });
 }
  

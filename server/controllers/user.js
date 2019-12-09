@@ -64,7 +64,13 @@ module.exports = {
     res.status(200).json({
       token
     });
-    console.log("UserController.signIn() is called");
+  },
+  facebookOAuth: async (req, res, next) => {
+    // generate token by the req.user
+    const token = signToken(req.user);
+    res.status(200).json({
+      token
+    });
   },
   secret: async (req, res, next) => {
     console.log("UserController.secret() is called");

@@ -13,6 +13,9 @@ const passportJWT = passport.authenticate("jwt", {
 const passportGoogle = passport.authenticate("googleToken", {
   session: false
 });
+const passportFacebook = passport.authenticate("facebookToken", {
+  session: false
+});
 
 
 const {
@@ -24,6 +27,8 @@ const UsersController = require("../controllers/user");
 router.post("/signup", validateBody(schemas.authSchema), UsersController.signUp);
 
 router.post("/oauth/google", passportGoogle, UsersController.googleOAuth);
+
+router.post("/oauth/facebook", passportFacebook, UsersController.facebookOAuth);
 
 router.post("/signin", validateBody(schemas.authSchema), passportSignIn, UsersController.signIn);
 

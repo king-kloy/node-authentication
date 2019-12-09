@@ -6,6 +6,8 @@ const {
 const LocalStrategy = require("passport-local").Strategy;
 require("dotenv/config");
 const GooglePlusTokenStrategy = require("passport-google-plus-token");
+const FacebookTokenStrategy = require("passport-facebook-token");
+require("dotenv/config");
 
 const User = require("./models/User.model");
 
@@ -32,37 +34,72 @@ passport.use(new JwtStrategy({
 
 // Google OAuth Strategy
 passport.use("googleToken", new GooglePlusTokenStrategy({
-  clientID: "233789283823-87v3kd7mhe1kskm6gthshgbr1rgf0ja1.apps.googleusercontent.com",
-  clientSecret: "Rw_febGMnWgNyA01dok4R9J_"
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET
 }, async (accessToken, refreshToken, profile, done) => {
-    try {
-      console.log("accessToken", accessToken);
-      console.log("refreshToken", refreshToken);
-      console.log("profile", profile);
+  try {
+    console.log("accessToken", accessToken);
+    console.log("refreshToken", refreshToken);
+    console.log("profile", profile);
 
-      // check if user exist in our db
-      const existingUser = await User.findOne({
-        "google.id": profile.id
-      });
-      if (existingUser) {
-        return done(null, existingUser);
-      }
-
-      // if new account
-      const newUser = new User({
-        method: "google",
-        google: {
-          id: profile.id,
-          email: profile.emails[0].value
-        }
-      });
-      // save new user
-      await newUser.save();
-      done(null, newUser);
-
-    } catch (error) {
-      done(error, false, error.message);
+    // check if user exist in our db
+    const existingUser = await User.findOne({
+      "google.id": profile.id
+    });
+    if (existingUser) {
+      return done(null, existingUser);
     }
+
+    // if new account
+    const newUser = new User({
+      method: "google",
+      google: {
+        id: profile.id,
+        email: profile.emails[0].value
+      }
+    });
+    // save new user
+    await newUser.save();
+    done(null, newUser);
+
+  } catch (error) {
+    done(error, false, error.message);
+  }
+}));
+
+// Facebook OAuth Strategy
+passport.use("facebookToken", new FacebookTokenStrategy({
+  clientID: process.env.FACEBOOK_CLIENT_ID,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    console.log("accessToken", accessToken);
+    console.log("refreshToken", refreshToken);
+    console.log("profile", profile);
+
+    // check if user exist in our db
+    const existingUser = await User.findOne({
+      "facebook.id": profile.id
+    });
+    if (existingUser) {
+      return done(null, existingUser);
+    }
+
+    // if new account
+    const newUser = new User({
+      method: "facebook",
+      facebook: {
+        id: profile.id,
+        email: profile.emails[0].value
+      }
+    });
+    // save new user 
+    await newUser.save();
+    done(null, newUser);
+
+  } catch (error) {
+    done(error, false, error.message);
+  }
 }));
 
 //Local Strategy
